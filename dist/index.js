@@ -405,80 +405,9 @@ client.on("messageCreate", (message) => __awaiter(void 0, void 0, void 0, functi
     console.log(res);
 }));
 import express from "express";
-import axios from "axios";
-import { InteractionType, InteractionResponseType, verifyKeyMiddleware } from "discord-interactions";
 const app = express();
-const discord_api = axios.create({
-    baseURL: 'https://discord.com/api/',
-    timeout: 3000,
-    headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
-        "Access-Control-Allow-Headers": "Authorization",
-        "Authorization": `Bot ${process.env["API_TOKEN"]}`
-    }
-});
-app.post('/interactions', verifyKeyMiddleware(process.env["PUBLIC_KEY"]), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const interaction = req.body;
-    if (interaction.type === InteractionType.APPLICATION_COMMAND) {
-        console.log(interaction.data.name);
-        if (interaction.data.name == 'yo') {
-            return res.send({
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    content: `Yo ${interaction.member.user.username}!`,
-                },
-            });
-        }
-        if (interaction.data.name == 'dm') {
-            let c = (yield discord_api.post(`/users/@me/channels`, {
-                recipient_id: interaction.member.user.id
-            })).data;
-            try {
-                let res = yield discord_api.post(`/channels/${c.id}/messages`, {
-                    content: 'Yo! I got your slash command. I am not able to respond to DMs just slash commands.',
-                });
-                console.log(res.data);
-            }
-            catch (e) {
-                console.log(e);
-            }
-            return res.send({
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    content: '👍'
-                }
-            });
-        }
-    }
-}));
-app.get('/register_commands', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _e;
-    let slash_commands = [
-        {
-            "name": "yo",
-            "description": "replies with Yo!",
-            "options": []
-        },
-        {
-            "name": "dm",
-            "description": "sends user a DM",
-            "options": []
-        }
-    ];
-    try {
-        let discord_response = yield discord_api.put(`/applications/${process.env["APPLICATION_ID"]}//commands`, slash_commands);
-        console.log(discord_response.data);
-        return res.send('commands have been registered');
-    }
-    catch (e) {
-        console.error(e.code);
-        console.error((_e = e.response) === null || _e === void 0 ? void 0 : _e.data);
-        return res.send(`${e.code} error from discord`);
-    }
-}));
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.send('Follow documentation ');
+    return res.send('Woken!');
 }));
 app.listen(8999, () => {
 });
