@@ -1,0 +1,23 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "skipDefaultLibCheck": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "ES6",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true,
+        "removeComments": true,
+        "lib": ["ESNext", "DOM"],
+        "outDir": "./dist"
+    },
+    "files": [
+        "lib/index.ts",
+    ]
+}

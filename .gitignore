@@ -1,0 +1,5 @@
+database
+dist
+node_modules
+untracked_assets
+.env

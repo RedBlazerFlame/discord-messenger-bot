@@ -1,0 +1,1 @@
+export type NullableObj<T> = {[K in keyof T]?: T[K]};

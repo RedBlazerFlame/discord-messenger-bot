@@ -1,0 +1,32 @@
+{
+  "name": "discord-messenger-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "type": "module",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --watch",
+    "delete-build": "del /f /q dist",
+    "nodemon-run": "nodemon run dist/index.js",
+    "server": "npm run delete-build && concurrently --kill-others \"npm run build\" \"npm run nodemon-run\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.3.1",
+    "mkdirp": "^3.0.1"
+  }
+}
