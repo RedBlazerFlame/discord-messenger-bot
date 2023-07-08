@@ -467,7 +467,7 @@ app.get('/register_commands', (req, res) => __awaiter(void 0, void 0, void 0, fu
         }
     ];
     try {
-        let discord_response = yield discord_api.put(`/applications/${APPLICATION_ID}/guilds/${GUILD_ID}/commands`, slash_commands);
+        let discord_response = yield discord_api.put(`/applications/${process.env["APPLICATION_ID"]}//commands`, slash_commands);
         console.log(discord_response.data);
         return res.send('commands have been registered');
     }
