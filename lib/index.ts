@@ -476,3 +476,17 @@ client.on("messageCreate", async (message: Message) => {
 
     console.log(res);
 });
+
+// Interaction Endpoint (From starter-discord-bot)
+import express from "express";
+const app = express();
+
+
+app.get('/', async (req,res) =>{
+  return res.send('Woken!');
+})
+
+
+app.listen(8080, () => {
+
+})
