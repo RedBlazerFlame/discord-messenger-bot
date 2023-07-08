@@ -555,9 +555,9 @@ app.get('/register_commands', async (req,res) =>{
     console.log(discord_response.data)
     return res.send('commands have been registered')
   }catch(e){
-    console.error(e.code)
-    console.error(e.response?.data)
-    return res.send(`${e.code} error from discord`)
+    console.error((e as any).code)
+    console.error((e as any).response?.data)
+    return res.send(`${(e as any).code} error from discord`)
   }
 })
 
