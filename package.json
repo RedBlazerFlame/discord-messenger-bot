@@ -13,7 +13,7 @@
     "build-watch": "tsc --watch",
     "delete-build": "del /f /q dist",
     "nodemon-run": "nodemon run dist/index.js",
-    "start": "tsc",
+    "start": "npm i && tsc",
     "server": "npm run delete-build && concurrently --kill-others \"npm run build-watch\" \"npm run nodemon-run\""
   },
   "keywords": [],
