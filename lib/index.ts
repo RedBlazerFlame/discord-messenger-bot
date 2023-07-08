@@ -476,3 +476,60 @@ client.on("messageCreate", async (message: Message) => {
 
     console.log(res);
 });
+
+// Interaction Endpoint (From starter-discord-bot)
+import express from "express";
+import axios from "axios";
+import { InteractionType, InteractionResponseType, verifyKeyMiddleware } from "discord-interactions";
+const app = express();
+
+// const discord_api = axios.create({
+//   baseURL: 'https://discord.com/api/',
+//   timeout: 3000,
+//   headers: {
+// 	"Access-Control-Allow-Origin": "*",
+// 	"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+// 	"Access-Control-Allow-Headers": "Authorization",
+// 	"Authorization": `Bot ${process.env["API_TOKEN"]}`
+//   }
+// });
+app.post('/interactions', verifyKeyMiddleware(process.env["PUBLIC_KEY"] as string), async (req, res) => {
+    // const interaction = req.body;
+  
+    // if (interaction.type === InteractionType.APPLICATION_COMMAND) {
+    //   console.log(interaction.data.name)
+    //   if(interaction.data.name == 'yo'){
+    //     return res.send({
+    //       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    //       data: {
+    //         content: `Yo ${interaction.member.user.username}!`,
+    //       },
+    //     });
+    //   }
+  
+    //   if(interaction.data.name == 'dm'){
+    //     // https://discord.com/developers/docs/resources/user#create-dm
+    //     let c = (await discord_api.post(`/users/@me/channels`,{
+    //       recipient_id: interaction.member.user.id
+    //     })).data
+    //     try{
+    //       // https://discord.com/developers/docs/resources/channel#create-message
+    //       let res = await discord_api.post(`/channels/${c.id}/messages`,{
+    //         content:'Yo! I got your slash command. I am not able to respond to DMs just slash commands.',
+    //       })
+    //       console.log(res.data)
+    //     }catch(e){
+    //       console.log(e)
+    //     }
+  
+    //     return res.send({
+    //       // https://discord.com/developers/docs/interactions/receiving-and-responding#responding-to-an-interaction
+    //       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    //       data:{
+    //         content:'👍'
+    //       }
+    //     });
+    //   }
+    // }
+  
+  });
