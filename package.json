@@ -9,11 +9,12 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --watch",
+    "build": "tsc",
+    "build-watch": "tsc --watch",
     "delete-build": "del /f /q dist",
     "nodemon-run": "nodemon run dist/index.js",
     "start": "npm run delete-build && npm run build && node dist/index.js",
-    "server": "npm run delete-build && concurrently --kill-others \"npm run build\" \"npm run nodemon-run\""
+    "server": "npm run delete-build && concurrently --kill-others \"npm run build-watch\" \"npm run nodemon-run\""
   },
   "keywords": [],
   "author": "",
