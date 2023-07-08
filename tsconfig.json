@@ -15,7 +15,7 @@
         "forceConsistentCasingInFileNames": true,
         "removeComments": true,
         "lib": ["ESNext", "DOM"],
-        "outDir": "./"
+        "outDir": "./dist"
     },
     "files": [
         "lib/index.ts",
