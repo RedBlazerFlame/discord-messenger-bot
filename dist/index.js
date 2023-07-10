@@ -138,7 +138,7 @@ function broadcastMessage(targetMessage) {
         let embedMessage = new EmbedBuilder().setAuthor({
             name: targetMessage.author.username,
             iconURL: (_a = targetMessage.author.avatarURL()) !== null && _a !== void 0 ? _a : undefined,
-        }).setTitle(`<**${targetMessage.author.username}** (from **${((_b = targetMessage.guild) === null || _b === void 0 ? void 0 : _b.name) || "unknown server"}**#*${targetMessage.channel.name}*)>`).setDescription(targetMessage.content);
+        }).setTitle(`<**${((_b = targetMessage.guild) === null || _b === void 0 ? void 0 : _b.name) || "unknown server"}**#*${targetMessage.channel.name}*>`).setDescription(targetMessage.content);
         let messageOptions = {
             embeds: [embedMessage],
             files: [...targetMessage.attachments.values()],
