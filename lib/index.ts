@@ -1,4 +1,4 @@
-import { Channel, Client, GatewayIntentBits, GuildChannel, Message, MessageFlags, TextBasedChannel, TextChannel } from 'discord.js';
+import { APIEmbed, Channel, Client, EmbedAuthorOptions, EmbedBuilder, GatewayIntentBits, GuildChannel, Message, MessageFlags, TextBasedChannel, TextChannel } from 'discord.js';
 import { DatabaseManager } from './map_database_manager.js';
 import 'dotenv/config';
 
@@ -57,8 +57,8 @@ async function createPortal(portalId: string, channelId: string): Promise<void> 
 
 async function requestPortal(portalId: string, channelId: string): Promise<void> {
     let pendingChannelsList = (await db.get<PortalDocument>(...portalKey(portalId)))?.pending_channels;
-    if(pendingChannelsList === undefined) throw new Error("Portal Doesn't Exist!");
-    
+    if (pendingChannelsList === undefined) throw new Error("Portal Doesn't Exist!");
+
     let q1 = db.set<PortalDocument>(...portalKey(portalId), {
         pending_channels: [...pendingChannelsList, `${channelId}`]
     });
@@ -70,8 +70,8 @@ async function requestPortal(portalId: string, channelId: string): Promise<void>
 
 async function removePending(portalId: string, channelId: string): Promise<void> {
     let pendingChannelsList = (await db.get<PortalDocument>(...portalKey(portalId)))?.pending_channels;
-    if(pendingChannelsList === undefined) throw new Error("Portal Doesn't Exist!");
-    
+    if (pendingChannelsList === undefined) throw new Error("Portal Doesn't Exist!");
+
     let q1 = db.set<PortalDocument>(...portalKey(portalId), {
         pending_channels: pendingChannelsList.filter((v) => v !== channelId)
     });
@@ -83,14 +83,14 @@ async function removePending(portalId: string, channelId: string): Promise<void>
 
 async function requestPending(portalId: string, channelId: string): Promise<boolean> {
     let pendingChannelsList = (await db.get<PortalDocument>(...portalKey(portalId)))?.pending_channels;
-    if(pendingChannelsList === undefined) throw new Error("Portal Doesn't Exist!");
+    if (pendingChannelsList === undefined) throw new Error("Portal Doesn't Exist!");
     return pendingChannelsList.includes(channelId);
 }
 
 async function addToPortal(portalId: string, channelId: string): Promise<void> {
     let portalDocument = (await db.get<PortalDocument>(...portalKey(portalId)));
-    if(portalDocument === undefined) throw new Error("Portal Doesn't Exist!");
-    
+    if (portalDocument === undefined) throw new Error("Portal Doesn't Exist!");
+
     let q1 = db.set<PortalDocument>(...portalKey(portalId), {
         pending_channels: portalDocument.pending_channels.filter((v) => v !== channelId),
         channel_list: [...portalDocument.channel_list, channelId]
@@ -128,22 +128,26 @@ async function removeFromPortal(portalId: string, channelId: string): Promise<vo
 }
 
 async function broadcastMessage(targetMessage: Message) {
-    let messageOptions = {
-        content: `<**${targetMessage.author.username}** (from **${targetMessage.guild?.name || "unknown server"}**#*${(targetMessage.channel as TextChannel).name}*)>\n${targetMessage.content}`,
-        files: [...targetMessage.attachments.values()],
-    };
-    if(!await hasPortal(targetMessage.channelId)) {
+    if (!await hasPortal(targetMessage.channelId)) {
         return;
     }
     let portalId = await channelPortal(targetMessage.channelId);
-    if(portalId === null) {
+    if (portalId === null) {
         return;
     }
     let otherChannels = await portalMembers(portalId);
-    if(otherChannels === null || otherChannels === undefined) {
+    if (otherChannels === null || otherChannels === undefined) {
         return;
     }
     console.log(otherChannels);
+    let embedMessage = new EmbedBuilder().setAuthor({
+        name: targetMessage.author.username,
+        iconURL: targetMessage.author.avatarURL() ?? undefined,
+    }).setTitle(`<**${targetMessage.author.username}** (from **${targetMessage.guild?.name || "unknown server"}**#*${(targetMessage.channel as TextChannel).name}*)>`).setDescription(targetMessage.content)
+    let messageOptions = {
+        embeds: [embedMessage],
+        files: [...targetMessage.attachments.values()],
+    };
     let failedChannels: string[] = [];
     for (let channel of otherChannels) {
         if (channel !== targetMessage.channelId) {
@@ -156,7 +160,7 @@ async function broadcastMessage(targetMessage: Message) {
         }
     }
 
-    if(failedChannels.length > 0) {
+    if (failedChannels.length > 0) {
         let sentMessagePromise = targetMessage.reply({
             content: `Message failed to send on some channels`,
         });
@@ -225,12 +229,12 @@ const callbackMap = new Map<string, (m: Message, a: any[]) => Promise<string | v
                 message.channel.send("Error: The portal does not exist");
                 return "Error: The portal does not exist";
             }
-            if(!await requestPending(channelDocument.portal as string, channelId)) {
+            if (!await requestPending(channelDocument.portal as string, channelId)) {
                 let content = "Error: this channel never sent an invitation request";
                 message.channel.send(content);
                 return content;
             }
-            if(await hasPortal(channelId)) {
+            if (await hasPortal(channelId)) {
                 let content = "Error: this channel is already part of another portal";
                 await removePending(channelDocument.portal as string, channelId);
                 message.channel.send(content);
@@ -240,12 +244,12 @@ const callbackMap = new Map<string, (m: Message, a: any[]) => Promise<string | v
             message.channel.send(`Channel ${channelId} was successfully added!`);
             let addedChannel = (client.channels.cache.get(channelId) as TextChannel);
             addedChannel.send(`Channel *${message.channelId}* **"${(message.channel as TextChannel).name}"** from server **"${message.guild?.name}"** has accepted your portal join request`);
-            for(let toBroadcastChannelId of portalDocument.channel_list) {
-                if(toBroadcastChannelId === message.channelId || toBroadcastChannelId === channelId) continue;
+            for (let toBroadcastChannelId of portalDocument.channel_list) {
+                if (toBroadcastChannelId === message.channelId || toBroadcastChannelId === channelId) continue;
                 (client.channels.cache.get(toBroadcastChannelId) as TextChannel).send(`Channel ${channelId} **"${addedChannel.name}"** (from **${addedChannel.guild?.name}**) joined the portal`);
             }
         }],
-        ["transfer-ownership", async(message: Message, args: string[]) => {
+        ["transfer-ownership", async (message: Message, args: string[]) => {
             if (args.length < 1) {
                 message.channel.send("Error: Too few arguments!");
                 return "Error: Too few arguments!";
@@ -258,18 +262,18 @@ const callbackMap = new Map<string, (m: Message, a: any[]) => Promise<string | v
             }
 
             let portalId = await channelPortal(message.channelId);
-            
+
             let portalDocument = await db.get<PortalDocument>(...portalKey(`${portalId}`));
             if (portalDocument === undefined) {
                 message.channel.send("Error: The portal does not exist");
                 return "Error: The portal does not exist";
             }
-            if(portalDocument.portal_owner !== message.channelId) {
+            if (portalDocument.portal_owner !== message.channelId) {
                 let messageContent = "Error: You are not the portal owner";
                 message.channel.send(messageContent);
                 return messageContent;
             }
-            if(!portalDocument.channel_list.includes(channelId)) {
+            if (!portalDocument.channel_list.includes(channelId)) {
                 let messageContent = "Error: That channel is not a portal member";
                 message.channel.send(messageContent);
                 return messageContent;
@@ -280,7 +284,7 @@ const callbackMap = new Map<string, (m: Message, a: any[]) => Promise<string | v
             message.channel.send("You are no longer the portal owner");
             (client.channels.cache.get(channelId) as TextChannel).send("You are now the portal owner");
         }],
-        ["delete-portal", async(message: Message, args: string[]) => {
+        ["delete-portal", async (message: Message, args: string[]) => {
             // if (args.length < 1) {
             //     message.channel.send("Error: Too few arguments!");
             //     return "Error: Too few arguments!";
@@ -293,19 +297,19 @@ const callbackMap = new Map<string, (m: Message, a: any[]) => Promise<string | v
             }
 
             let portalId = await channelPortal(message.channelId);
-            
+
             let portalDocument = await db.get<PortalDocument>(...portalKey(`${portalId}`));
             if (portalDocument === undefined) {
                 message.channel.send("Error: The portal does not exist");
                 return "Error: The portal does not exist";
             }
-            if(portalDocument.portal_owner !== message.channelId) {
+            if (portalDocument.portal_owner !== message.channelId) {
                 let messageContent = "Error: You are not the portal owner";
                 message.channel.send(messageContent);
                 return messageContent;
             }
             await db.delete(...portalKey(`${portalId}`));
-            for(let channelId of portalDocument.channel_list) {
+            for (let channelId of portalDocument.channel_list) {
                 await db.set<ChannelDocument>(...channelKey(channelId), {
                     portal: null,
                 });
@@ -324,21 +328,21 @@ const callbackMap = new Map<string, (m: Message, a: any[]) => Promise<string | v
             }
 
             let portalId = await channelPortal(message.channelId);
-            
+
             let portalDocument = await db.get<PortalDocument>(...portalKey(`${portalId}`));
             if (portalDocument === undefined) {
                 message.channel.send("Error: The portal does not exist");
                 return "Error: The portal does not exist";
             }
-            if(portalDocument.portal_owner === message.channelId) {
+            if (portalDocument.portal_owner === message.channelId) {
                 let messageContent = "Error: You cannot remove this channel from the portal, since this channel is the portal owner. Transfer ownership to another server first.";
                 message.channel.send(messageContent);
                 return messageContent;
             }
             await removeFromPortal(portalId, message.channelId);
             message.author.send(`Successfully removed from portal ${portalId}`);
-            for(let channelId of portalDocument.channel_list) {
-                if(channelId == message.channelId) continue;
+            for (let channelId of portalDocument.channel_list) {
+                if (channelId == message.channelId) continue;
                 (client.channels.cache.get(channelId) as TextChannel).send(`Channel ${message.channelId} **"${(message.channel as TextChannel).name}"** (from **${message.guild?.name}**) left the portal`);
             }
         }],
@@ -353,7 +357,7 @@ const callbackMap = new Map<string, (m: Message, a: any[]) => Promise<string | v
             }
 
             let portalId = await channelPortal(message.channelId);
-            
+
             let portalDocument = await db.get<PortalDocument>(...portalKey(`${portalId}`));
             if (portalDocument === undefined) {
                 message.channel.send("Error: The portal does not exist");
@@ -363,15 +367,15 @@ const callbackMap = new Map<string, (m: Message, a: any[]) => Promise<string | v
 
 **Members:**
 ${portalDocument.channel_list.map((memberId) => {
-    let memberChannel = (client.channels.cache.get(memberId) as TextChannel);
-    return `- Channel *${memberId}* **"${memberChannel.name}"** (Server: **${memberChannel.guild.name}**)${(portalDocument?.portal_owner === memberId ? "**(OWNER)**" : "")}`;
-}).join("\n")}
+                let memberChannel = (client.channels.cache.get(memberId) as TextChannel);
+                return `- Channel *${memberId}* **"${memberChannel.name}"** (Server: **${memberChannel.guild.name}**)${(portalDocument?.portal_owner === memberId ? "**(OWNER)**" : "")}`;
+            }).join("\n")}
 
 **Pending Members:**
 ${portalDocument.pending_channels.map((memberId) => {
-    let memberChannel = (client.channels.cache.get(memberId) as TextChannel);
-    return `- Channel *${memberId}* **"${memberChannel.name}"** (Server: **${memberChannel.guild.name}**)${(portalDocument?.portal_owner === memberId ? "**(OWNER)**" : "")}`;
-}).join("\n")}`;
+                let memberChannel = (client.channels.cache.get(memberId) as TextChannel);
+                return `- Channel *${memberId}* **"${memberChannel.name}"** (Server: **${memberChannel.guild.name}**)${(portalDocument?.portal_owner === memberId ? "**(OWNER)**" : "")}`;
+            }).join("\n")}`;
             message.channel.send(messageContent);
         }],
         ["test-message", async (message: Message, args: string[]) => {
@@ -418,7 +422,7 @@ ${portalDocument.pending_channels.map((memberId) => {
         //         return "Error: Reply to the message you want to send";
         //     }
         //     let targetMessage = await message.channel.messages.fetch(message.reference.messageId);
-            
+
         //     if (targetMessage.author.id !== message.author.id) {
         //         message.channel.send("Error: You can only send messages you wrote");
         //         return "Error: You can only send messages you wrote";
@@ -444,7 +448,7 @@ ${portalDocument.pending_channels.map((memberId) => {
             }
             message.author.send(`The portal ID of this channel is ${await channelPortal(message.channelId)}`);
         }],
-        ["debug", async (message: Message, args: string[]) => {
+        ["debug-1", async (message: Message, args: string[]) => {
             console.log(client.channels.cache.get(message.channelId));
             console.log(typeof message.channelId);
             let targetChannel: TextBasedChannel | undefined = client.channels.cache.get(message.channelId) as TextBasedChannel | undefined;
@@ -453,7 +457,11 @@ ${portalDocument.pending_channels.map((memberId) => {
                 message.channel.send(messageContent);
                 return messageContent;
             }
-            targetChannel?.send("Debug!");
+            let targetEmbed = new EmbedBuilder().setAuthor({
+                name: message.author.username,
+                iconURL: message.author.avatarURL() ?? undefined,
+            }).setTitle("From a place further than the universe").setDescription(message.content);
+            targetChannel?.send({ embeds: [targetEmbed] });
         }],
     ],
 );
@@ -482,8 +490,8 @@ import express from "express";
 const app = express();
 
 
-app.get('/', async (req,res) =>{
-  return res.send('Woken!');
+app.get('/', async (req, res) => {
+    return res.send('Woken!');
 })
 
 

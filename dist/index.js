@@ -1,5 +1,5 @@
 import { __awaiter } from "tslib";
-import { Client, GatewayIntentBits } from 'discord.js';
+import { Client, EmbedBuilder, GatewayIntentBits } from 'discord.js';
 import { DatabaseManager } from './map_database_manager.js';
 import 'dotenv/config';
 const db = new DatabaseManager();
@@ -121,12 +121,8 @@ function removeFromPortal(portalId, channelId) {
     });
 }
 function broadcastMessage(targetMessage) {
-    var _a;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        let messageOptions = {
-            content: `<**${targetMessage.author.username}** (from **${((_a = targetMessage.guild) === null || _a === void 0 ? void 0 : _a.name) || "unknown server"}**#*${targetMessage.channel.name}*)>\n${targetMessage.content}`,
-            files: [...targetMessage.attachments.values()],
-        };
         if (!(yield hasPortal(targetMessage.channelId))) {
             return;
         }
@@ -139,6 +135,14 @@ function broadcastMessage(targetMessage) {
             return;
         }
         console.log(otherChannels);
+        let embedMessage = new EmbedBuilder().setAuthor({
+            name: targetMessage.author.username,
+            iconURL: (_a = targetMessage.author.avatarURL()) !== null && _a !== void 0 ? _a : undefined,
+        }).setTitle(`<**${targetMessage.author.username}** (from **${((_b = targetMessage.guild) === null || _b === void 0 ? void 0 : _b.name) || "unknown server"}**#*${targetMessage.channel.name}*)>`).setDescription(targetMessage.content);
+        let messageOptions = {
+            embeds: [embedMessage],
+            files: [...targetMessage.attachments.values()],
+        };
         let failedChannels = [];
         for (let channel of otherChannels) {
             if (channel !== targetMessage.channelId) {
@@ -374,7 +378,8 @@ ${portalDocument.pending_channels.map((memberId) => {
             }
             message.author.send(`The portal ID of this channel is ${yield channelPortal(message.channelId)}`);
         })],
-    ["debug", (message, args) => __awaiter(void 0, void 0, void 0, function* () {
+    ["debug-1", (message, args) => __awaiter(void 0, void 0, void 0, function* () {
+            var _e;
             console.log(client.channels.cache.get(message.channelId));
             console.log(typeof message.channelId);
             let targetChannel = client.channels.cache.get(message.channelId);
@@ -383,7 +388,11 @@ ${portalDocument.pending_channels.map((memberId) => {
                 message.channel.send(messageContent);
                 return messageContent;
             }
-            targetChannel === null || targetChannel === void 0 ? void 0 : targetChannel.send("Debug!");
+            let targetEmbed = new EmbedBuilder().setAuthor({
+                name: message.author.username,
+                iconURL: (_e = message.author.avatarURL()) !== null && _e !== void 0 ? _e : undefined,
+            }).setTitle("From a place further than the universe").setDescription(message.content);
+            targetChannel === null || targetChannel === void 0 ? void 0 : targetChannel.send({ embeds: [targetEmbed] });
         })],
 ]);
 function processCommand(message, keywords) {
