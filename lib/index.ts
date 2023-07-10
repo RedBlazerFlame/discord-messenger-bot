@@ -143,7 +143,7 @@ async function broadcastMessage(targetMessage: Message) {
     let embedMessage = new EmbedBuilder().setAuthor({
         name: targetMessage.author.username,
         iconURL: targetMessage.author.avatarURL() ?? undefined,
-    }).setTitle(`<**${targetMessage.guild?.name || "unknown server"}**#*${(targetMessage.channel as TextChannel).name}*>`).setDescription(targetMessage.content)
+    }).setTitle(`<**${targetMessage.guild?.name || "unknown server"}**#*${(targetMessage.channel as TextChannel).name}*>`).setDescription(targetMessage.content).setColor(targetMessage.member?.displayHexColor || null);
     let messageOptions = {
         embeds: [embedMessage],
         files: [...targetMessage.attachments.values()],
@@ -460,7 +460,7 @@ ${portalDocument.pending_channels.map((memberId) => {
             let targetEmbed = new EmbedBuilder().setAuthor({
                 name: message.author.username,
                 iconURL: message.author.avatarURL() ?? undefined,
-            }).setTitle("From a place further than the universe").setDescription(message.content);
+            }).setTitle("From a place further than the universe").setDescription(message.content).setColor(message.member?.displayHexColor || null);
             targetChannel?.send({ embeds: [targetEmbed] });
         }],
     ],

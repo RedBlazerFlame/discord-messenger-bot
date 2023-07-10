@@ -121,7 +121,7 @@ function removeFromPortal(portalId, channelId) {
     });
 }
 function broadcastMessage(targetMessage) {
-    var _a, _b;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         if (!(yield hasPortal(targetMessage.channelId))) {
             return;
@@ -138,7 +138,7 @@ function broadcastMessage(targetMessage) {
         let embedMessage = new EmbedBuilder().setAuthor({
             name: targetMessage.author.username,
             iconURL: (_a = targetMessage.author.avatarURL()) !== null && _a !== void 0 ? _a : undefined,
-        }).setTitle(`<**${((_b = targetMessage.guild) === null || _b === void 0 ? void 0 : _b.name) || "unknown server"}**#*${targetMessage.channel.name}*>`).setDescription(targetMessage.content);
+        }).setTitle(`<**${((_b = targetMessage.guild) === null || _b === void 0 ? void 0 : _b.name) || "unknown server"}**#*${targetMessage.channel.name}*>`).setDescription(targetMessage.content).setColor(((_c = targetMessage.member) === null || _c === void 0 ? void 0 : _c.displayHexColor) || null);
         let messageOptions = {
             embeds: [embedMessage],
             files: [...targetMessage.attachments.values()],
@@ -379,7 +379,7 @@ ${portalDocument.pending_channels.map((memberId) => {
             message.author.send(`The portal ID of this channel is ${yield channelPortal(message.channelId)}`);
         })],
     ["debug-1", (message, args) => __awaiter(void 0, void 0, void 0, function* () {
-            var _e;
+            var _e, _f;
             console.log(client.channels.cache.get(message.channelId));
             console.log(typeof message.channelId);
             let targetChannel = client.channels.cache.get(message.channelId);
@@ -391,7 +391,7 @@ ${portalDocument.pending_channels.map((memberId) => {
             let targetEmbed = new EmbedBuilder().setAuthor({
                 name: message.author.username,
                 iconURL: (_e = message.author.avatarURL()) !== null && _e !== void 0 ? _e : undefined,
-            }).setTitle("From a place further than the universe").setDescription(message.content);
+            }).setTitle("From a place further than the universe").setDescription(message.content).setColor(((_f = message.member) === null || _f === void 0 ? void 0 : _f.displayHexColor) || null);
             targetChannel === null || targetChannel === void 0 ? void 0 : targetChannel.send({ embeds: [targetEmbed] });
         })],
 ]);

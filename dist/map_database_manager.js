@@ -4,6 +4,10 @@ import { readFile, writeFile, unlink, access, mkdir } from 'fs/promises';
 import path from 'path';
 import { recursiveObjectUpdate } from './utils/object_utils.js';
 export class DatabaseManager {
+    constructor(databasePath = "./database/") {
+        _DatabaseManager_databasePath.set(this, void 0);
+        __classPrivateFieldSet(this, _DatabaseManager_databasePath, databasePath, "f");
+    }
     filePath(model, id) {
         return path.join(__classPrivateFieldGet(this, _DatabaseManager_databasePath, "f"), model, id);
     }
@@ -42,10 +46,6 @@ export class DatabaseManager {
         return __awaiter(this, void 0, void 0, function* () {
             yield unlink(this.filePath(model, id));
         });
-    }
-    constructor(databasePath = "./database/") {
-        _DatabaseManager_databasePath.set(this, void 0);
-        __classPrivateFieldSet(this, _DatabaseManager_databasePath, databasePath, "f");
     }
 }
 _DatabaseManager_databasePath = new WeakMap();
