@@ -143,7 +143,7 @@ async function broadcastMessage(targetMessage: Message) {
     let embedMessage = new EmbedBuilder().setAuthor({
         name: targetMessage.author.username,
         iconURL: targetMessage.author.avatarURL() ?? undefined,
-    }).setTitle(`<**${targetMessage.author.username}** (from **${targetMessage.guild?.name || "unknown server"}**#*${(targetMessage.channel as TextChannel).name}*)>`).setDescription(targetMessage.content)
+    }).setTitle(`<**${targetMessage.guild?.name || "unknown server"}**#*${(targetMessage.channel as TextChannel).name}*>`).setDescription(targetMessage.content)
     let messageOptions = {
         embeds: [embedMessage],
         files: [...targetMessage.attachments.values()],
