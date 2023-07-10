@@ -141,7 +141,7 @@ async function broadcastMessage(targetMessage: Message) {
     }
     console.log(otherChannels);
     let embedMessage = new EmbedBuilder().setAuthor({
-        name: targetMessage.author.username,
+        name: `${targetMessage.member?.nickname || "No nickname"} (${targetMessage.author.username})`,
         iconURL: targetMessage.author.avatarURL() ?? undefined,
     }).setTitle(`<**${targetMessage.guild?.name || "unknown server"}**#*${(targetMessage.channel as TextChannel).name}*>`).setDescription(targetMessage.content).setColor(targetMessage.member?.displayHexColor || null);
     let messageOptions = {
@@ -458,7 +458,7 @@ ${portalDocument.pending_channels.map((memberId) => {
                 return messageContent;
             }
             let targetEmbed = new EmbedBuilder().setAuthor({
-                name: message.author.username,
+                name: `${message.member?.nickname || "No nickname"} (${message.author.username})`,
                 iconURL: message.author.avatarURL() ?? undefined,
             }).setTitle("From a place further than the universe").setDescription(message.content).setColor(message.member?.displayHexColor || null);
             targetChannel?.send({ embeds: [targetEmbed] });
