@@ -138,7 +138,7 @@ function broadcastMessage(targetMessage) {
         let embedMessage = new EmbedBuilder().setAuthor({
             name: `${((_a = targetMessage.member) === null || _a === void 0 ? void 0 : _a.nickname) || "No nickname"} (${targetMessage.author.username})`,
             iconURL: (_b = targetMessage.author.avatarURL()) !== null && _b !== void 0 ? _b : undefined,
-        }).setTitle(`<**${((_c = targetMessage.guild) === null || _c === void 0 ? void 0 : _c.name) || "unknown server"}**#*${targetMessage.channel.name}*>`).setDescription(targetMessage.content).setColor(((_d = targetMessage.member) === null || _d === void 0 ? void 0 : _d.displayHexColor) || null);
+        }).setTitle(`<**${((_c = targetMessage.guild) === null || _c === void 0 ? void 0 : _c.name) || "unknown server"}**#*${targetMessage.channel.name}*>`).setDescription((targetMessage.content.length === 0 ? " " : targetMessage.content)).setColor(((_d = targetMessage.member) === null || _d === void 0 ? void 0 : _d.displayHexColor) || null);
         let messageOptions = {
             embeds: [embedMessage],
             files: [...targetMessage.attachments.values()],
